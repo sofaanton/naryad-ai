@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="p-4 sm:p-8 flex flex-col min-h-screen">
+<body class="p-4 sm:p-8 flex flex-col min-h-screen bg-slate-950 text-slate-100 font-sans">
 
     <!-- ЭКРАН АВТОРИЗАЦИИ -->
     <div id="authScreen" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-xl flex items-center justify-center p-4">
@@ -38,7 +38,6 @@
                     </select>
                 </div>
 
-                <!-- Поле пароля для руководителя -->
                 <div id="passwordFieldContainer">
                     <label class="block text-amber-400 font-semibold mb-1.5">🔑 Пароль руководителя</label>
                     <input type="password" id="regPassword" placeholder="Введите пароль доступа" value="1234" class="w-full p-3 bg-slate-900 border border-amber-500/50 rounded-xl text-white focus:outline-none focus:border-amber-400 font-mono">
@@ -65,7 +64,7 @@
     <div id="mainApp" class="hidden flex-1 flex flex-col max-w-6xl w-full mx-auto space-y-6">
         
         <!-- Шапка -->
-        <header class="glass-panel p-4 rounded-3xl flex flex-col sm:flex-row items-center justify-between gap-4">
+        <header class="glass-panel p-4 rounded-3xl flex flex-col sm:flex-row items-center justify-between gap-4 border border-slate-800">
             <div class="flex items-center gap-3">
                 <div class="w-12 h-12 rounded-2xl bg-indigo-600 flex items-center justify-center text-white text-xl shadow-lg shadow-indigo-500/30">
                     <i class="fa-solid fa-hard-hat"></i>
@@ -94,85 +93,117 @@
             
             <div class="lg:col-span-2 space-y-6">
                 
-                <!-- Панель быстрых действий мастера (Рассылка и ИИ-Подбор) -->
                 <div class="flex flex-wrap gap-3">
                     <button onclick="openBroadcastModal()" class="bg-rose-600 hover:bg-rose-700 text-white px-5 py-3 rounded-2xl font-bold text-xs flex items-center gap-2 shadow-lg shadow-rose-600/20 transition-all cursor-pointer">
-                        📢 Массовая рассылка смене
+                        <i class="fa-solid fa-bullhorn"></i> Массовая рассылка смене
                     </button>
                     <button onclick="getAIRecommendation()" class="bg-purple-600 hover:bg-purple-700 text-white px-5 py-3 rounded-2xl font-bold text-xs flex items-center gap-2 shadow-lg shadow-purple-600/20 transition-all cursor-pointer">
-                        🤖 ИИ-Подбор исполнителя
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> ИИ-Подбор исполнителя
                     </button>
                 </div>
 
-                <!-- Создание наряда -->
-                <div class="glass-panel p-6 rounded-3xl space-y-4">
+                <!-- Создание наряда мастером -->
+                <div class="glass-panel p-6 rounded-3xl space-y-4 border border-slate-800">
                     <h3 class="font-bold text-sm text-white flex items-center gap-2">
-                        <i class="fa-solid fa-circle-plus text-indigo-400"></i> Создать новый наряд
+                        <i class="fa-solid fa-circle-plus text-indigo-400"></i> Выдать новый наряд рабочему
                     </h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                        <select class="p-3 bg-slate-900 border border-slate-700 rounded-xl text-white">
-                            <option>Участок дробления (Дробилка КМД-1750)</option>
-                            <option>Участок обогащения (Конвейер К-3)</option>
-                            <option>Карьер (Экскаватор ЭКГ-10)</option>
-                        </select>
-                        <select class="p-3 bg-slate-900 border border-slate-700 rounded-xl text-rose-400 font-bold">
-                            <option>🔥 Аварийный наряд — срочно</option>
-                            <option>📌 Плановый (ППР)</option>
-                        </select>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                        <div>
+                            <label class="block text-slate-400 mb-1">Участок работы:</label>
+                            <select id="orderLocation" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-white">
+                                <option>Участок дробления (Дробилка КМД-1750)</option>
+                                <option>Участок обогащения (Конвейер К-3)</option>
+                                <option>Карьер (Экскаватор ЭКГ-10)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1">Приоритет:</label>
+                            <select id="orderPriority" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-rose-400 font-bold">
+                                <option>🔥 Аварийный наряд — срочно</option>
+                                <option>📌 Плановый (ППР)</option>
+                            </select>
+                        </div>
+                        <!-- Установка времени выполнения -->
+                        <div>
+                            <label class="block text-amber-400 font-semibold mb-1"><i class="fa-regular fa-clock"></i> Выполнить до (Время):</label>
+                            <input type="time" id="orderDeadline" value="17:00" class="w-full p-3 bg-slate-900 border border-amber-500/60 rounded-xl text-amber-300 font-bold">
+                        </div>
                     </div>
-                    <textarea id="orderDesc" rows="2" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white" placeholder="Описание неисправности..."></textarea>
+
+                    <div>
+                        <label class="block text-slate-400 mb-1 text-xs">Подробное задание для работника:</label>
+                        <textarea id="orderDesc" rows="2" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white" placeholder="Опишите детально задачу и необходимые запчасти/инструменты..."></textarea>
+                    </div>
                     
                     <div class="flex items-center justify-between pt-2">
                         <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
                             <input type="checkbox" id="hasPhotoCheck" class="rounded bg-slate-900 border-slate-700 text-indigo-600" checked>
-                            <span>Требовать ИИ-контроль фото</span>
+                            <span>Обязательный фото-отчет с объекта</span>
                         </label>
-                        <button onclick="submitOrderToAI()" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow-lg transition-all">
-                            Выдать наряд
+                        <button onclick="submitOrderToAI()" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-lg transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-paper-plane"></i> Отправить наряд
                         </button>
                     </div>
 
                     <div id="aiResultBox" class="hidden p-4 rounded-2xl bg-slate-900/90 border border-slate-800 text-xs"></div>
                 </div>
 
-                <!-- Лента фото-отчетов от рабочих -->
-                <div class="glass-panel p-6 rounded-3xl space-y-4">
+                <!-- Лента полученных отчетов от рабочих -->
+                <div class="glass-panel p-6 rounded-3xl space-y-4 border border-slate-800">
                     <h3 class="font-bold text-sm text-white flex items-center justify-between">
                         <span class="flex items-center gap-2">
-                            <i class="fa-solid fa-camera-retro text-emerald-400"></i> Фото-отчеты от рабочих в реальном времени
+                            <i class="fa-solid fa-camera-retro text-emerald-400"></i> Входящие фото-отчеты от смены
                         </span>
-                        <button onclick="loadWorkerReports()" class="text-[10px] bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-indigo-300 transition">🔄 Обновить</button>
+                        <button onclick="loadWorkerReports()" class="text-[10px] bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-indigo-300 transition flex items-center gap-1">
+                            <i class="fa-solid fa-rotate"></i> Обновить
+                        </button>
                     </h3>
-                    <div id="employerReportsFeed" class="space-y-2 max-h-48 overflow-y-auto text-xs">
-                        <p class="text-slate-400 italic text-center py-2">Пока нет отправленных фото-отчетов от смены...</p>
+                    <div id="employerReportsFeed" class="space-y-3 max-h-60 overflow-y-auto text-xs pr-1">
+                        <div class="p-3 bg-slate-900 rounded-2xl border border-slate-800 flex justify-between items-center">
+                            <div>
+                                <p class="font-bold text-emerald-400">👷 Ахметов Е. (Слесарь)</p>
+                                <p class="text-slate-300 mt-0.5">«Замена сальника на редукторе выполнена, протечек нет.»</p>
+                                <p class="text-[10px] text-slate-500 mt-1">📁 Прикреплено фото: <span class="text-indigo-400 underline cursor-pointer">gear_repair_done.jpg</span></p>
+                            </div>
+                            <span class="text-[10px] bg-slate-800 text-slate-400 px-2.5 py-1 rounded-full border border-slate-700">14:25</span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Канбан доска -->
-                <div class="glass-panel p-6 rounded-3xl space-y-4">
+                <!-- Доска нарядов -->
+                <div class="glass-panel p-6 rounded-3xl space-y-4 border border-slate-800">
                     <h3 class="font-bold text-sm text-white flex items-center gap-2">
-                        <i class="fa-solid fa-kanban text-indigo-400"></i> Доска нарядов смены
+                        <i class="fa-solid fa-kanban text-indigo-400"></i> Мониторинг выполнения нарядов
                     </h3>
                     <div class="grid grid-cols-3 gap-3 text-xs">
                         <div class="p-3 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-2">
-                            <p class="font-bold text-blue-400">Выдано (2)</p>
+                            <p class="font-bold text-blue-400 flex items-center justify-between">
+                                <span>Выдано</span> <span class="bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded-full text-[10px]">2</span>
+                            </p>
                             <div class="p-2.5 bg-slate-900 rounded-xl border border-slate-800">
                                 <p class="font-bold text-white">#147 — Дробилка</p>
+                                <p class="text-[10px] text-amber-400 font-semibold">Срок: до 16:00</p>
                                 <p class="text-[10px] text-slate-400">Ахметов Е.</p>
                             </div>
                         </div>
                         <div class="p-3 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-2">
-                            <p class="font-bold text-amber-400">В работе (1)</p>
+                            <p class="font-bold text-amber-400 flex items-center justify-between">
+                                <span>В работе</span> <span class="bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full text-[10px]">1</span>
+                            </p>
                             <div class="p-2.5 bg-slate-900 rounded-xl border border-slate-800">
                                 <p class="font-bold text-white">#145 — Конвейер</p>
+                                <p class="text-[10px] text-amber-400 font-semibold">Срок: до 17:30</p>
                                 <p class="text-[10px] text-slate-400">Смирнов Д.</p>
                             </div>
                         </div>
                         <div class="p-3 bg-slate-900/50 rounded-2xl border border-slate-800 space-y-2">
-                            <p class="font-bold text-rose-400">⚠️ Просрочено (1)</p>
+                            <p class="font-bold text-rose-400 flex items-center justify-between">
+                                <span>Просрочено</span> <span class="bg-rose-500/20 text-rose-300 px-2 py-0.5 rounded-full text-[10px]">1</span>
+                            </p>
                             <div class="p-2.5 bg-slate-900 rounded-xl border border-slate-800">
                                 <p class="font-bold text-white">#140 — Насос</p>
-                                <p class="text-[10px] text-rose-400 font-bold">+35 мин</p>
+                                <p class="text-[10px] text-rose-400 font-bold">Опоздание: +35 мин</p>
                             </div>
                         </div>
                     </div>
@@ -180,24 +211,24 @@
             </div>
 
             <!-- ИИ-Чат Бот -->
-            <div class="glass-panel p-6 rounded-3xl flex flex-col justify-between h-[580px]">
+            <div class="glass-panel p-6 rounded-3xl flex flex-col justify-between h-[600px] border border-slate-800">
                 <div>
                     <h3 class="font-bold text-sm text-white flex items-center gap-2 mb-1">
                         <i class="fa-solid fa-robot text-emerald-400"></i> ИИ-Ассистент Наряда
                     </h3>
-                    <p class="text-[11px] text-slate-400 mb-4">Спросите у бота про свободных работников или состояние оборудования.</p>
+                    <p class="text-[11px] text-slate-400 mb-4">Помогает быстро оценить статус выполнения задач и найти свободных людей.</p>
                 </div>
                 
                 <div id="chatMessages" class="flex-1 bg-slate-900/70 border border-slate-800 rounded-2xl p-3 overflow-y-auto space-y-3 text-xs">
                     <div class="text-left">
                         <span class="inline-block bg-slate-800 text-emerald-400 text-xs px-3 py-2 rounded-xl border border-slate-700">
-                            🤖 Привет! Я ИИ-ассистент НарядAI. Готов отвечать на запросы по смене.
+                            🤖 Привет! Я ИИ-ассистент НарядAI. Напишите «Кто свободен?» или спросите статус задачи.
                         </span>
                     </div>
                 </div>
 
                 <div class="mt-3 flex gap-2">
-                    <input type="text" id="chatInput" placeholder="Спроси: кто свободен?..." class="flex-1 p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500">
+                    <input type="text" id="chatInput" placeholder="Введите ваш вопрос..." class="flex-1 p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500">
                     <button onclick="sendAIChatMessage()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold shadow">
                         <i class="fa-solid fa-paper-plane"></i>
                     </button>
@@ -206,34 +237,54 @@
         </div>
 
         <!-- ПАНЕЛЬ РАБОЧЕГО -->
-        <div id="workerSection" class="hidden max-w-md mx-auto glass-panel p-6 rounded-3xl space-y-5 w-full">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div id="workerSection" class="hidden max-w-xl mx-auto glass-panel p-6 rounded-3xl space-y-6 w-full border border-slate-800">
+            <!-- Карточка текущего задания -->
+            <div class="bg-slate-900/90 p-5 rounded-2xl border border-slate-800 space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <div>
+                        <span class="px-2.5 py-1 bg-rose-500/20 text-rose-400 text-[11px] font-bold rounded-lg border border-rose-500/30">🔥 АВАРИЙНЫЙ НАРЯД #147</span>
+                        <h3 class="font-bold text-white text-base mt-2">Участок дробления: Дробилка КМД-1750</h3>
+                    </div>
+                </div>
+
+                <!-- Индикатор дедлайна для рабочего -->
+                <div class="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-clock text-amber-400 text-lg"></i>
+                        <div>
+                            <p class="text-[10px] text-amber-300 font-semibold uppercase">Срок сдачи задания:</p>
+                            <p class="text-xs font-bold text-white">До <span id="taskDeadlineDisplay" class="text-amber-400">17:00</span> сегодня</p>
+                        </div>
+                    </div>
+                    <span id="acceptanceTimer" class="font-mono font-bold text-amber-400 text-sm bg-slate-950 px-3 py-1 rounded-lg border border-amber-500/40">Осталось ~2 ч. 15 мин.</span>
+                </div>
+
+                <div class="space-y-2 text-xs text-slate-300">
+                    <p><strong class="text-slate-400">Задание от работодателя:</strong> Устранить течь масла из редуктора главного привода. Заменить уплотнительное кольцо.</p>
+                    <p><strong class="text-slate-400">Материалы и инструмент:</strong> Сальник 50х70 (2 шт), гаечные ключи №19-24.</p>
+                </div>
+            </div>
+
+            <!-- Форма отправки отчета с фото прямо работодателю -->
+            <div class="space-y-4 p-5 rounded-2xl bg-slate-900/80 border border-slate-800 text-xs">
+                <h4 class="font-bold text-indigo-300 text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-paper-plane text-emerald-400"></i> Отправить отчет работодателю
+                </h4>
+
                 <div>
-                    <span class="px-2 py-0.5 bg-rose-500/20 text-rose-400 text-[10px] font-bold rounded">🔥 АВАРИЙНЫЙ НАРЯД #147</span>
-                    <h3 class="font-bold text-white text-sm mt-1">Дробилка КМД-1750</h3>
+                    <label class="block font-semibold text-slate-300 mb-1.5">
+                        <i class="fa-solid fa-camera text-indigo-400"></i> Сделайте или выберите фото работы:
+                    </label>
+                    <input type="file" id="workerPhotoInput" accept="image/*" class="w-full text-slate-400 text-[11px] file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer bg-slate-950 rounded-xl border border-slate-800">
                 </div>
-                <div class="text-right">
-                    <span class="text-[10px] text-slate-400 block">Таймер принятия:</span>
-                    <span id="acceptanceTimer" class="font-mono font-bold text-amber-400 text-sm">3:00</span>
-                </div>
-            </div>
-
-            <div class="space-y-2 text-xs text-slate-300">
-                <p><strong>Участок:</strong> Дробление и обогащение</p>
-                <p><strong>Описание:</strong> Течь масла из редуктора главного привода.</p>
-                <p><strong>Материалы:</strong> Сальник 50х70 (2 шт)</p>
-            </div>
-
-            <div class="space-y-3 p-4 rounded-2xl bg-slate-900/80 border border-slate-800 text-xs">
-                <label class="block font-bold text-indigo-300">
-                    <i class="fa-solid fa-camera"></i> Прикрепить фото выполненной работы
-                </label>
-                <input type="file" id="workerPhotoInput" class="w-full text-slate-400 text-[11px] file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer">
                 
-                <input type="text" id="workerComment" placeholder="Комментарий для мастера (например: Сальник заменен)" class="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white">
+                <div>
+                    <label class="block font-semibold text-slate-300 mb-1.5">Комментарий / Пояснение для мастера:</label>
+                    <input type="text" id="workerComment" placeholder="Например: Работа готова, редуктор протестирован под нагрузкой" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-indigo-500">
+                </div>
 
-                <button onclick="sendPhotoToBoss()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow-lg shadow-emerald-600/30 transition-all flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-paper-plane"></i> Отправить фото начальнику смены
+                <button onclick="sendPhotoToBoss()" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow-lg shadow-emerald-600/30 transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-check-circle"></i> Отправить отчет и завершить задание
                 </button>
             </div>
         </div>
@@ -242,18 +293,18 @@
 
     <!-- МОДАЛЬНОЕ ОКНО МАССОВОЙ РАССЫЛКИ -->
     <div id="broadcastModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.75); z-index:9999; justify-content:center; align-items:center;">
-        <div style="background:#1e293b; color:#f8fafc; padding:25px; border-radius:12px; width:420px; max-width:90%; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid #334155;">
+        <div style="background:#1e293b; color:#f8fafc; padding:25px; border-radius:16px; width:420px; max-width:90%; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid #334155;">
             <h3 style="margin-top:0; color:#f1f5f9; display:flex; align-items:center; gap:8px; font-weight:bold;">📢 Экстренная рассылка смене</h3>
             
             <label style="display:block; margin-top:12px; font-weight:bold; color:#cbd5e1; font-size:12px;">Заголовок:</label>
-            <input type="text" id="bcTitle" value="Внимание смене!" style="width:100%; margin:6px 0 12px 0; padding:10px; background:#0f172a; color:#ffffff; border:1px solid #475569; border-radius:6px; box-sizing:border-box; font-size:13px;">
+            <input type="text" id="bcTitle" value="Внимание смене!" style="width:100%; margin:6px 0 12px 0; padding:10px; background:#0f172a; color:#ffffff; border:1px solid #475569; border-radius:8px; box-sizing:border-box; font-size:13px;">
             
             <label style="display:block; font-weight:bold; color:#cbd5e1; font-size:12px;">Сообщение:</label>
-            <textarea id="bcText" style="width:100%; height:90px; margin:6px 0 15px 0; padding:10px; background:#0f172a; color:#ffffff; border:1px solid #475569; border-radius:6px; box-sizing:border-box; resize:none; font-size:13px;">Всем бригадам пройти инструктаж по ТБ в 14:00.</textarea>
+            <textarea id="bcText" style="width:100%; height:90px; margin:6px 0 15px 0; padding:10px; background:#0f172a; color:#ffffff; border:1px solid #475569; border-radius:8px; box-sizing:border-box; resize:none; font-size:13px;">Всем бригадам пройти инструктаж по ТБ в 14:00.</textarea>
             
             <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:15px;">
-                <button onclick="closeBroadcastModal()" style="padding:10px 18px; background:#475569; color:white; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">Отмена</button>
-                <button onclick="sendMassBroadcast()" style="padding:10px 18px; background:#e11d48; color:white; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px; box-shadow: 0 2px 8px rgba(225,29,72,0.4);">Отправить всем</button>
+                <button onclick="closeBroadcastModal()" style="padding:10px 18px; background:#475569; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-size:12px;">Отмена</button>
+                <button onclick="sendMassBroadcast()" style="padding:10px 18px; background:#e11d48; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-size:12px; box-shadow: 0 2px 8px rgba(225,29,72,0.4);">Отправить всем</button>
             </div>
         </div>
     </div>
